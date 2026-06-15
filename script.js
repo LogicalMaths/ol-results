@@ -100,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupProvinceChangeHandler();
   setupPhoneFormatting();
   setupRealTimeValidation();
+  loadDynamicTestimonials();
 });
 
 // =============================================
@@ -399,4 +400,75 @@ function showToast(message) {
   setTimeout(() => {
     toast.classList.remove('visible');
   }, 4000);
+}
+
+// =============================================
+// Load Dynamic Testimonials/Feedbacks
+// =============================================
+async function loadDynamicTestimonials() {
+  const testimonialsSection = document.getElementById('testimonialsSection');
+  const testimonialsTrack = document.getElementById('testimonialsTrack');
+  
+  if (!testimonialsSection || !testimonialsTrack) return;
+  if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE' || APPS_SCRIPT_URL === '') {
+    // If local demo, show some default testimonials
+    const dummyComments = [
+      { name: "Sajith Fernando", grade: "A", comments: "ගණිතය ඉතාම පැහැදිලිව සහ තර්කානුකූලව (Logical) උගන්වන ලංකාවේ හොඳම පන්තිය!" },
+      { name: "Dilshan Perera", grade: "A", comments: "ප්‍රබුද්ධ සර්ගේ ක්‍රම නිසා මට සා/පෙළ ගණිතයට A සාමාර්ථයක් ගන්න පුළුවන් වුණා." },
+      { name: "Amali Silva", grade: "B", comments: "විෂය කරුණු ඉතාම සරලව තේරුම් ගන්න පුළුවන් ක්‍රමවේදයක් තියෙන්නේ. සර් සුපිරි!" }
+    ];
+    renderTestimonials(dummyComments);
+    return;
+  }
+
+  try {
+    const response = await fetch(APPS_SCRIPT_URL);
+    const result = await response.json();
+    
+    if (result.status === 'success' && result.data && result.data.length > 0) {
+      // Filter out rows that have actual comments
+      const commentsData = result.data.filter(r => r.comments && r.comments.toString().trim() !== '');
+      if (commentsData.length > 0) {
+        renderTestimonials(commentsData);
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load testimonials:", error);
+  }
+}
+
+function renderTestimonials(comments) {
+  const testimonialsSection = document.getElementById('testimonialsSection');
+  const testimonialsTrack = document.getElementById('testimonialsTrack');
+  
+  // Clear track
+  testimonialsTrack.innerHTML = '';
+  
+  // If fewer than 4 comments, duplicate them to ensure marquee has enough items to loop seamlessly
+  let listToRender = [...comments];
+  while (listToRender.length < 5) {
+    listToRender = listToRender.concat(comments);
+  }
+  
+  // Render cards
+  listToRender.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'testimonial-card';
+    card.innerHTML = `
+      <p class="testimonial-card__text">"${r.comments}"</p>
+      <p class="testimonial-card__author">${r.name} (${r.grade} Grade)</p>
+    `;
+    testimonialsTrack.appendChild(card);
+  });
+  
+  // Duplicate all cards at the end of the track to enable seamless CSS infinite scroll loop
+  const cards = Array.from(testimonialsTrack.children);
+  cards.forEach(card => {
+    const clone = card.cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    testimonialsTrack.appendChild(clone);
+  });
+  
+  // Show section now that comments exist
+  testimonialsSection.style.display = 'block';
 }

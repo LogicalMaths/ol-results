@@ -981,11 +981,11 @@ body {
   color: var(--text-muted);
 }
 
-/* Horizontal scrolling track for mobile/default */
+/* Horizontal scrolling track */
 .testimonials-track {
   display: flex;
   gap: var(--space-md);
-  animation: marqueeHorizontal 30s linear infinite;
+  animation: marqueeHorizontal 25s linear infinite;
   width: max-content;
 }
 
@@ -1030,48 +1030,4 @@ body {
 @keyframes marqueeHorizontal {
   0% { transform: translateX(0); }
   100% { transform: translateX(calc(-50% - var(--space-md) / 2)); }
-}
-
-/* Desktop Styles — side-by-side floating layout */
-@media (min-width: 1025px) {
-  .app-layout {
-    flex-direction: row-reverse;
-    align-items: flex-start;
-    justify-content: center;
-    max-width: 960px;
-    gap: 30px;
-    padding: var(--space-lg) var(--space-md) var(--space-2xl);
-  }
-
-  .form-container {
-    flex: 1;
-    margin: 0;
-    max-width: 580px;
-    padding: 0;
-  }
-
-  .testimonials-container {
-    width: 320px;
-    height: 720px;
-    position: sticky;
-    top: var(--space-lg);
-    margin: 0;
-    max-height: 90vh;
-  }
-
-  .testimonials-track {
-    flex-direction: column;
-    animation: marqueeVertical 40s linear infinite;
-    height: max-content;
-    width: 100%;
-  }
-
-  .testimonial-card {
-    width: 100%;
-  }
-
-  @keyframes marqueeVertical {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(calc(-50% - var(--space-md) / 2)); }
-  }
 }

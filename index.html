@@ -20,49 +20,6 @@
 
   <!-- App Layout Wrapper -->
   <div class="app-layout">
-    
-    <!-- Testimonials Section -->
-    <aside class="testimonials-container" aria-label="Student Feedbacks">
-      <div class="testimonials-header">
-        <h3>සිසුන්ගේ ප්‍රතිචාර</h3>
-        <p class="testimonials-header__en">Student Feedbacks</p>
-      </div>
-      <div class="testimonials-track">
-        <div class="testimonial-card">
-          <p class="testimonial-card__text">"ගණිතය ඉතාම පැහැදිලිව සහ තර්කානුකූලව (Logical) උගන්වන ලංකාවේ හොඳම පන්තිය!"</p>
-          <p class="testimonial-card__author">Sajith Fernando (A Grade)</p>
-        </div>
-        <div class="testimonial-card">
-          <p class="testimonial-card__text">"ප්‍රබුද්ධ සර්ගේ ක්‍රම නිසා මට සා/පෙළ ගණිතයට A සාමාර්ථයක් ගන්න පුළුවන් වුණා."</p>
-          <p class="testimonial-card__author">Dilshan Perera (A Grade)</p>
-        </div>
-        <div class="testimonial-card">
-          <p class="testimonial-card__text">"විෂය කරුණු ඉතාම සරලව තේරුම් ගන්න පුළුවන් ක්‍රමවේදයක් තියෙන්නේ. සර් සුපිරි!"</p>
-          <p class="testimonial-card__author">Amali Silva (B Grade)</p>
-        </div>
-        <div class="testimonial-card">
-          <p class="testimonial-card__text">"Logical Maths පන්තිය නිසා ගණිතය මගේ ප්‍රියතම විෂය බවට පත්වුණා."</p>
-          <p class="testimonial-card__author">Kavindu Perera (A Grade)</p>
-        </div>
-        <!-- Duplicated for Marquee Infinite Scroll -->
-        <div class="testimonial-card" aria-hidden="true">
-          <p class="testimonial-card__text">"ගණිතය ඉතාම පැහැදිලිව සහ තර්කානුකූලව (Logical) උගන්වන ලංකාවේ හොඳම පන්තිය!"</p>
-          <p class="testimonial-card__author">Sajith Fernando (A Grade)</p>
-        </div>
-        <div class="testimonial-card" aria-hidden="true">
-          <p class="testimonial-card__text">"ප්‍රබුද්ධ සර්ගේ ක්‍රම නිසා මට සා/පෙළ ගණිතයට A සාමාර්ථයක් ගන්න පුළුවන් වුණා."</p>
-          <p class="testimonial-card__author">Dilshan Perera (A Grade)</p>
-        </div>
-        <div class="testimonial-card" aria-hidden="true">
-          <p class="testimonial-card__text">"විෂය කරුණු ඉතාම සරලව තේරුම් ගන්න පුළුවන් ක්‍රමවේදයක් තියෙන්නේ. සර් සුපිරි!"</p>
-          <p class="testimonial-card__author">Amali Silva (B Grade)</p>
-        </div>
-        <div class="testimonial-card" aria-hidden="true">
-          <p class="testimonial-card__text">"Logical Maths පන්තිය නිසා ගණිතය මගේ ප්‍රියතම විෂය බවට පත්වුණා."</p>
-          <p class="testimonial-card__author">Kavindu Perera (A Grade)</p>
-        </div>
-      </div>
-    </aside>
 
     <!-- Main Form -->
     <main class="form-container">
@@ -332,6 +289,17 @@
       </p>
     </footer>
   </main>
+
+  <!-- Testimonials Section -->
+  <aside class="testimonials-container" id="testimonialsSection" aria-label="Student Feedbacks" style="display: none;">
+    <div class="testimonials-header">
+      <h3>සිසුන්ගේ ප්‍රතිචාර (Student Feedbacks)</h3>
+      <p class="testimonials-header__en">අපගේ සිසුන් පවසන දෑ</p>
+    </div>
+    <div class="testimonials-track" id="testimonialsTrack">
+      <!-- Dynamically populated from Google Sheets -->
+    </div>
+  </aside>
   
   </div> <!-- Close app-layout -->
 

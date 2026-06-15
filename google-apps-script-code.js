@@ -65,21 +65,12 @@ function doPost(e) {
   }
 }
 
-// Handle GET requests (for dashboard data retrieval with passcode verification)
+// Handle GET requests (for dashboard data retrieval or public testimonials)
 function doGet(e) {
   try {
-    // Verify passcode parameter
     var passcode = e.parameter.passcode;
     var correctPasscode = "maths123";
-    
-    if (passcode !== correctPasscode) {
-      return ContentService
-        .createTextOutput(JSON.stringify({ 
-          status: 'error', 
-          message: 'Unauthorized access. Invalid passcode.' 
-        }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
+    var isAdmin = (passcode === correctPasscode);
     
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     var data = sheet.getDataRange().getValues();
@@ -99,13 +90,29 @@ function doGet(e) {
     var rows = [];
     for (var i = 1; i < data.length; i++) {
       var row = {};
+      var hasComment = false;
       for (var j = 0; j < headers.length; j++) {
         var key = headers[j].toString().toLowerCase().trim()
           .replace(/\s+/g, '') // remove spaces
           .replace(/[^a-z0-9]/gi, ''); // remove non-alphanumeric
-        row[key] = data[i][j];
+          
+        var val = data[i][j];
+        
+        // Mark if has comments
+        if (key === 'comments' && val && val.toString().trim() !== '') {
+          hasComment = true;
+        }
+        
+        // Security filter: only include private fields for admin
+        if (isAdmin || key === 'name' || key === 'grade' || key === 'comments') {
+          row[key] = val;
+        }
       }
-      rows.push(row);
+      
+      // If public request, only include rows that have actual comments
+      if (isAdmin || hasComment) {
+        rows.push(row);
+      }
     }
     
     return ContentService

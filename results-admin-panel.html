@@ -292,13 +292,46 @@
       width: 40px;
       height: 40px;
       border: 4px solid var(--border-subtle);
-      border-top-color: var(--primary);
+      border-top-color: #dc2626; /* premium red accent loader */
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .gate-btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .gate-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #ffffff;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
   </style>
 </head>
 <body>
+
+  <!-- Preloader -->
+  <div class="preloader" id="preloader">
+    <div class="preloader__content">
+      <div class="preloader__spinner"></div>
+      <p class="preloader__text">Logical Maths</p>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('load', () => {
+      const preloader = document.getElementById('preloader');
+      if (preloader) {
+        preloader.classList.add('fade-out');
+      }
+    });
+  </script>
 
   <!-- Floating Background Orbs -->
   <div class="bg-effects" aria-hidden="true">
@@ -327,7 +360,10 @@
         </div>
       </div>
       
-      <button class="gate-btn" id="gateBtn">දත්ත පූරණය කරන්න</button>
+      <button class="gate-btn" id="gateBtn">
+        <span id="gateBtnText">දත්ත පූරණය කරන්න</span>
+        <div class="gate-spinner" id="gateSpinner" style="display: none;"></div>
+      </button>
     </div>
   </div>
 
@@ -446,6 +482,8 @@
     const passcodeField = document.getElementById('passcodeField');
     const gateError = document.getElementById('gateError');
     const gateBtn = document.getElementById('gateBtn');
+    const gateBtnText = document.getElementById('gateBtnText');
+    const gateSpinner = document.getElementById('gateSpinner');
     
     const dashboard = document.getElementById('dashboard');
     const totalCountEl = document.getElementById('totalCount');
@@ -463,11 +501,26 @@
       if (e.key === 'Enter') verifyPasscode();
     });
 
-    function verifyPasscode() {
+    async function verifyPasscode() {
       if (passcodeField.value === PASSCODE) {
-        gateOverlay.style.display = 'none';
-        dashboard.style.display = 'block';
-        fetchDashboardData();
+        // Set loading states
+        passcodeField.disabled = true;
+        gateBtn.disabled = true;
+        gateBtnText.textContent = 'පූරණය වෙමින් පවතී...';
+        gateSpinner.style.display = 'block';
+        
+        const success = await fetchDashboardData();
+        
+        if (success) {
+          gateOverlay.style.display = 'none';
+          dashboard.style.display = 'block';
+        } else {
+          // Reset if failed
+          passcodeField.disabled = false;
+          gateBtn.disabled = false;
+          gateBtnText.textContent = 'දත්ත පූරණය කරන්න';
+          gateSpinner.style.display = 'none';
+        }
       } else {
         gateError.classList.add('visible');
       }
@@ -488,19 +541,21 @@
       // If Web App URL is still placeholder, load mock data for testing/demo
       if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE' || APPS_SCRIPT_URL === '') {
         console.log("Using Mock Data (Demo Mode)");
-        setTimeout(() => {
-          allData = [
-            { timestamp: "2026/06/15 20:00:15", name: "Kavindu Perera", school: "Royal College", indexnumber: "512398", grade: "A", province: "බස්නාහිර පළාත (Western)", district: "කොළඹ (Colombo)", whatsapp: "+94 77 123 4567", comments: "Highly recommended!" },
-            { timestamp: "2026/06/15 20:05:42", name: "Amara Silva", school: "Visakha Vidyalaya", indexnumber: "512415", grade: "A", province: "බස්නාහිර පළාත (Western)", district: "කොළඹ (Colombo)", whatsapp: "+94 71 987 6543", comments: "Thank you sir!" },
-            { timestamp: "2026/06/15 20:10:11", name: "Nimal Ranasinghe", school: "St. Thomas' College", indexnumber: "513202", grade: "B", province: "මධ්‍යම පළාත (Central)", district: "මහනුවර (Kandy)", whatsapp: "+94 75 111 2222", comments: "" },
-            { timestamp: "2026/06/15 20:15:33", name: "Suresh Fernando", school: "Ananda College", indexnumber: "512056", grade: "C", province: "බස්නාහිර පළාත (Western)", district: "ගම්පහ (Gampaha)", whatsapp: "+94 76 333 4444", comments: "Sir is logical!" },
-            { timestamp: "2026/06/15 20:18:00", name: "Dulani Mendis", school: "Mahinda College", indexnumber: "602511", grade: "S", province: "දකුණු පළාත (Southern)", district: "ගාල්ල (Galle)", whatsapp: "+94 78 555 6666", comments: "" },
-            { timestamp: "2026/06/15 20:21:09", name: "Nuwan Jayasundara", school: "Maliyadeva College", indexnumber: "650123", grade: "F", province: "වයඹ පළාත (North Western)", district: "කුරුණෑගල (Kurunegala)", whatsapp: "+94 70 888 9999", comments: "Need online classes help." }
-          ];
-          tableLoader.style.display = 'none';
-          renderDashboard(allData);
-        }, 1000);
-        return;
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            allData = [
+              { timestamp: "2026/06/15 20:00:15", name: "Kavindu Perera", school: "Royal College", indexnumber: "512398", grade: "A", province: "බස්නාහිර පළාත (Western)", district: "කොළඹ (Colombo)", whatsapp: "+94 77 123 4567", comments: "Highly recommended!" },
+              { timestamp: "2026/06/15 20:05:42", name: "Amara Silva", school: "Visakha Vidyalaya", indexnumber: "512415", grade: "A", province: "බස්නාහිර පළාත (Western)", district: "කොළඹ (Colombo)", whatsapp: "+94 71 987 6543", comments: "Thank you sir!" },
+              { timestamp: "2026/06/15 20:10:11", name: "Nimal Ranasinghe", school: "St. Thomas' College", indexnumber: "513202", grade: "B", province: "මධ්‍යම පළාත (Central)", district: "මහනුවර (Kandy)", whatsapp: "+94 75 111 2222", comments: "" },
+              { timestamp: "2026/06/15 20:15:33", name: "Suresh Fernando", school: "Ananda College", indexnumber: "512056", grade: "C", province: "බස්නාහිර පළාත (Western)", district: "ගම්පහ (Gampaha)", whatsapp: "+94 76 333 4444", comments: "Sir is logical!" },
+              { timestamp: "2026/06/15 20:18:00", name: "Dulani Mendis", school: "Mahinda College", indexnumber: "602511", grade: "S", province: "දකුණු පළාත (Southern)", district: "ගාල්ල (Galle)", whatsapp: "+94 78 555 6666", comments: "" },
+              { timestamp: "2026/06/15 20:21:09", name: "Nuwan Jayasundara", school: "Maliyadeva College", indexnumber: "650123", grade: "F", province: "වයඹ පළාත (North Western)", district: "කුරුණෑගල (Kurunegala)", whatsapp: "+94 70 888 9999", comments: "Need online classes help." }
+            ];
+            tableLoader.style.display = 'none';
+            renderDashboard(allData);
+            resolve(true);
+          }, 1000);
+        });
       }
 
       try {
@@ -511,14 +566,17 @@
         if (resJson.status === 'success') {
           allData = resJson.data || [];
           renderDashboard(allData);
+          return true;
         } else {
           alert('ප්‍රවේශය අනුමත නොවේ: වැරදි මුරපදයක් හෝ සේවාදායකයේ දෝෂයකි (Access Denied: Invalid passcode or server error).');
           gateOverlay.style.display = 'flex';
           dashboard.style.display = 'none';
+          return false;
         }
       } catch (err) {
         console.error(err);
         alert('සේවාදායකය සමඟ සම්බන්ධ වීමට නොහැක (Could not connect to Google Sheets server).');
+        return false;
       } finally {
         tableLoader.style.display = 'none';
       }

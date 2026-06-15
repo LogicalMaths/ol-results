@@ -7,7 +7,7 @@
 // =============================================
 // CONFIGURATION — Update this after Apps Script
 // =============================================
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyqRA-YPhMkY5LCvMBAoGLkZrOlDF3MN3C480A7Awx5Gs1ZjcBb1nMB7kaLn8ynp14/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby_CoPls9uxmlX8N8K8ZwnUq3QdDjbb_Af_Jv53YAJakr3vcbg0adAMxgW5fRX9AExB/exec';
 // ☝️ Replace with your deployed Google Apps Script Web App URL
 // Example: 'https://script.google.com/macros/s/AKfyc.../exec'
 

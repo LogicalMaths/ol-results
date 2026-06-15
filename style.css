@@ -31,9 +31,9 @@
   --border-focus: var(--primary);
 
   /* Text */
-  --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
+  --text-primary: #000000;
+  --text-secondary: #111111;
+  --text-muted: #374151;
   --text-on-primary: #ffffff;
 
   /* Grade colors */
@@ -639,8 +639,8 @@ body {
   font-family: 'Noto Sans Sinhala', 'Inter', sans-serif;
   font-size: 1.05rem;
   font-weight: 600;
-  color: var(--text-on-primary);
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #ffffff;
+  background: #000000;
   border: none;
   border-radius: var(--radius-lg);
   padding: 1rem 2rem;
@@ -648,12 +648,13 @@ body {
   position: relative;
   overflow: hidden;
   transition: all var(--transition-base);
-  box-shadow: 0 4px 15px var(--primary-glow);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .submit-btn:hover:not(:disabled) {
+  background: #1e1e1e;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px var(--primary-glow);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
 .submit-btn:active:not(:disabled) {

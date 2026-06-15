@@ -2,6 +2,7 @@
 <html lang="si">
 <head>
   <meta charset="UTF-8">
+  <script>const startTime = Date.now();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ප්‍රතිඵල විශ්ලේෂණ උපකරණ පුවරුව — Dashboard</title>
   <meta name="description" content="O/L Mathematics results analytical dashboard">
@@ -26,6 +27,13 @@
       justify-content: center;
       align-items: center;
       padding: var(--space-md);
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    
+    .gate-overlay.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
     }
     
     .gate-card {
@@ -329,10 +337,16 @@
 
   <script>
     window.addEventListener('load', () => {
-      const preloader = document.getElementById('preloader');
-      if (preloader) {
-        preloader.classList.add('fade-out');
-      }
+      const elapsedTime = Date.now() - startTime;
+      const minDelay = 1000; // 1 second minimum delay
+      const remainingTime = Math.max(0, minDelay - elapsedTime);
+      
+      setTimeout(() => {
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+          preloader.classList.add('fade-out');
+        }
+      }, remainingTime);
     });
   </script>
 
@@ -515,8 +529,11 @@
         const success = await fetchDashboardData();
         
         if (success) {
-          gateOverlay.style.display = 'none';
+          gateOverlay.classList.add('fade-out');
           dashboard.style.display = 'block';
+          setTimeout(() => {
+            gateOverlay.style.display = 'none';
+          }, 500);
         } else {
           // Reset if failed
           passcodeField.disabled = false;

@@ -1028,3 +1028,43 @@ body {
   0% { transform: translateX(0); }
   100% { transform: translateX(calc(-50% - var(--space-md) / 2)); }
 }
+
+/* ---------- Preloader Screen ---------- */
+.preloader {
+  position: fixed;
+  inset: 0;
+  background: #f8fafc;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.preloader.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.preloader__content {
+  text-align: center;
+}
+
+.preloader__spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(0, 0, 0, 0.05);
+  border-top-color: #dc2626; /* red accent spinner */
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+.preloader__text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}

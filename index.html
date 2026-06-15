@@ -10,6 +10,23 @@
 </head>
 <body>
 
+  <!-- Preloader -->
+  <div class="preloader" id="preloader">
+    <div class="preloader__content">
+      <div class="preloader__spinner"></div>
+      <p class="preloader__text">Logical Maths</p>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('load', () => {
+      const preloader = document.getElementById('preloader');
+      if (preloader) {
+        preloader.classList.add('fade-out');
+      }
+    });
+  </script>
+
   <!-- Background Effects -->
   <div class="bg-effects" aria-hidden="true">
     <div class="bg-orb bg-orb--1"></div>

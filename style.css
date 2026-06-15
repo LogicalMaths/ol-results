@@ -8,16 +8,15 @@
 
 /* ---------- CSS Variables ---------- */
 :root {
-  /* Primary palette — professional royal/indigo blue */
-  --primary-hue: 220;
-  --primary: hsl(var(--primary-hue), 85%, 50%);
-  --primary-light: hsl(var(--primary-hue), 80%, 65%);
-  --primary-dark: hsl(var(--primary-hue), 90%, 40%);
-  --primary-glow: hsla(var(--primary-hue), 85%, 50%, 0.15);
+  /* Primary palette — monochrome bold black and white */
+  --primary: #000000;
+  --primary-light: #222222;
+  --primary-dark: #000000;
+  --primary-glow: rgba(0, 0, 0, 0.05);
 
-  /* Accent */
-  --accent: hsl(295, 75%, 45%);
-  --accent-glow: hsla(295, 75%, 45%, 0.1);
+  /* Accent — Special things red */
+  --accent: #dc2626;
+  --accent-glow: rgba(220, 38, 38, 0.08);
 
   /* Surfaces */
   --bg-body: #f8fafc;
@@ -264,20 +263,20 @@ body {
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
-  background: rgba(59, 130, 246, 0.08);
-  border: 1px solid rgba(59, 130, 246, 0.15);
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.15);
   border-radius: 100px;
   padding: var(--space-xs) var(--space-md);
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--primary);
+  color: #dc2626;
   backdrop-filter: blur(10px);
 }
 
 .form-header__badge-dot {
   width: 6px;
   height: 6px;
-  background: var(--success);
+  background: #dc2626;
   border-radius: 50%;
   animation: pulse-dot 2s ease-in-out infinite;
 }
@@ -290,8 +289,8 @@ body {
 .form-header__year {
   font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--primary);
+  font-weight: 700;
+  color: var(--text-primary);
   letter-spacing: 2px;
   text-transform: uppercase;
   margin-bottom: var(--space-sm);
@@ -299,12 +298,9 @@ body {
 
 .form-header__title {
   font-size: 1.8rem;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.3;
-  background: linear-gradient(135deg, var(--text-primary), var(--primary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-primary);
   margin-bottom: var(--space-sm);
 }
 
@@ -350,9 +346,9 @@ body {
 }
 
 .form-card__title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--primary);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
   margin-bottom: var(--space-lg);
   display: flex;
   align-items: center;

@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ප්‍රතිඵල විශ්ලේෂණ උපකරණ පුවරුව — Dashboard</title>
+  <meta name="description" content="O/L Mathematics results analytical dashboard">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>📊</text></svg>">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Dashboard specific overrides and styling */
+    .dashboard-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: var(--space-xl) var(--space-md);
+      display: none; /* Hidden until passcode success */
+    }
+    
+    /* Passcode Gate */
+    .gate-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: #f8fafc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: var(--space-md);
+    }
+    
+    .gate-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: var(--space-2xl) var(--space-xl);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+      animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .gate-icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--space-md);
+    }
+    
+    .gate-input-group {
+      margin: var(--space-lg) 0;
+    }
+    
+    .gate-btn {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.85rem;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+    
+    .gate-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+    
+    /* Stats Layout */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+    
+    .stat-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .stat-card__val {
+      font-family: 'Inter', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+    
+    .stat-card__label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    
+    .stat-card__sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    
+    /* Grid content */
+    .dashboard-row {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* Charts & Lists */
+    .chart-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    
+    .chart-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      background: #f1f5f9;
+      border-radius: var(--radius-sm);
+      padding: 0.6rem var(--space-md);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .chart-bar__fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: var(--primary-glow);
+      z-index: 0;
+      transition: width 0.8s ease-out;
+    }
+    
+    .chart-bar__content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+    
+    .chart-bar__label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    /* Grade badges */
+    .grade-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      font-weight: 800;
+      color: #fff;
+      font-size: 0.8rem;
+    }
+    
+    .grade-badge--A { background: var(--grade-A); }
+    .grade-badge--B { background: var(--grade-B); }
+    .grade-badge--C { background: var(--grade-C); }
+    .grade-badge--S { background: var(--grade-S); }
+    .grade-badge--F { background: var(--grade-F); }
+    
+    /* Table Section */
+    .table-section {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    
+    .table-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+      flex-wrap: wrap;
+    }
+    
+    .search-input {
+      max-width: 300px;
+      padding: 0.6rem 1rem;
+      font-size: 0.88rem;
+    }
+    
+    .export-btn {
+      background: #0f172a;
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition-base);
+    }
+    
+    .export-btn:hover {
+      background: #1e293b;
+      transform: translateY(-1px);
+    }
+    
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+    }
+    
+    .submissions-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+    
+    .submissions-table th,
+    .submissions-table td {
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    
+    .submissions-table th {
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: #f8fafc;
+    }
+    
+    .submissions-table tr:hover td {
+      background: #f8fafc;
+    }
+    
+    /* Back link */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+    
+    .back-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .back-link:hover {
+      color: var(--primary);
+    }
+    
+    /* Loader overlay */
+    .loader-overlay {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-2xl) 0;
+    }
+    
+    .loader-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--border-subtle);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Background Orbs -->
+  <div class="bg-effects" aria-hidden="true">
+    <div class="bg-orb bg-orb--1"></div>
+    <div class="bg-orb bg-orb--2"></div>
+  </div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- Passcode Gate Overlay -->
+  <div class="gate-overlay" id="gateOverlay">
+    <div class="gate-card">
+      <div class="gate-icon">🔒</div>
+      <h2>ඇතුල්වීම සීමා කර ඇත</h2>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px;">ප්‍රතිඵල විශ්ලේෂණය බැලීමට මුරපදය ඇතුළත් කරන්න</p>
+      
+      <div class="gate-input-group">
+        <input 
+          type="password" 
+          id="passcodeField" 
+          class="form-input" 
+          placeholder="මුරපදය (Passcode) ඇතුළත් කරන්න"
+          style="text-align: center;"
+        >
+        <div class="form-error" id="gateError" style="justify-content: center; margin-top: var(--space-sm);">
+          <span>⚠ වැරදි මුරපදයකි. නැවත උත්සාහ කරන්න.</span>
+        </div>
+      </div>
+      
+      <button class="gate-btn" id="gateBtn">දත්ත පූරණය කරන්න</button>
+    </div>
+  </div>
+
+  <!-- Main Dashboard Container -->
+  <main class="dashboard-container" id="dashboard">
+    <header class="dashboard-header">
+      <div>
+        <a href="index.html" class="back-link">
+          <span>←</span> පෝරමය වෙත (Back to Form)
+        </a>
+        <h1 style="font-size: 1.6rem; font-weight: 700; margin-top: 4px; color: var(--text-primary);">ප්‍රතිඵල විශ්ලේෂණ උපකරණ පුවරුව</h1>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Prabuddha Sampath Mathematics • 2025/2026</p>
+      </div>
+      <button class="export-btn" id="refreshBtn">
+        <span>🔄</span> Refresh Data
+      </button>
+    </header>
+
+    <!-- Stat Cards Summary -->
+    <section class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <span class="stat-card__val" id="totalCount">-</span>
+        <span class="stat-card__label">මුළු සිසුන් ගණන</span>
+        <span class="stat-card__sub">Total Submissions</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__val" id="passRate">-</span>
+        <span class="stat-card__label">ගණිතය සමත් ප්‍රතිශතය</span>
+        <span class="stat-card__sub">Pass Rate (A, B, C, S)</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__val" id="gradeACount">-</span>
+        <span class="stat-card__label">මුළු A සාමාර්ථ ගණන</span>
+        <span class="stat-card__sub">Total A Grades</span>
+      </div>
+    </section>
+
+    <!-- Distribution & Lists Row -->
+    <div class="dashboard-row">
+      <!-- Grade Distribution Section -->
+      <section class="table-section">
+        <h2 style="font-size: 1rem; font-weight: 700; margin-bottom: var(--space-lg); color: var(--text-primary);">සාමාර්ථ ව්‍යාප්තිය (Grade Distribution)</h2>
+        <div class="chart-list" id="gradeChartList">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- Province summary -->
+      <section class="table-section">
+        <h2 style="font-size: 1rem; font-weight: 700; margin-bottom: var(--space-lg); color: var(--text-primary);">පළාත් ව්‍යාප්තිය (Province Breakdown)</h2>
+        <div class="chart-list" id="provinceChartList">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+    </div>
+
+    <!-- Table Section -->
+    <section class="table-section">
+      <div class="table-controls">
+        <h2 style="font-size: 1rem; font-weight: 700; color: var(--text-primary);">සිසුන්ගේ තොරතුරු ලේඛනය (Students Details)</h2>
+        <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+          <input 
+            type="text" 
+            id="tableSearch" 
+            class="form-input search-input" 
+            placeholder="නම, පාසල හෝ දිස්ත්‍රික්කයෙන් සොයන්න..."
+          >
+          <button class="export-btn" id="exportCsvBtn">
+            <span>📥</span> Excel/CSV Export
+          </button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="submissions-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>නම (Name)</th>
+              <th>පාසල (School)</th>
+              <th>විභාග අංකය (Index)</th>
+              <th>සාමාර්ථය (Grade)</th>
+              <th>ස්ථානය (Location)</th>
+              <th>WhatsApp අංකය</th>
+              <th>අදහස් (Comments)</th>
+            </tr>
+          </thead>
+          <tbody id="submissionsTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      <div id="tableLoader" class="loader-overlay" style="display: none;">
+        <div class="loader-spinner"></div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary);">දත්ත පූරණය වෙමින් පවතී...</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- script.js contains Apps Script Web App URL config, let's load it first -->
+  <script src="script.js"></script>
+  <script>
+    // Configuration & State
+    const PASSCODE = 'maths123';
+    let allData = [];
+
+    // Elements
+    const gateOverlay = document.getElementById('gateOverlay');
+    const passcodeField = document.getElementById('passcodeField');
+    const gateError = document.getElementById('gateError');
+    const gateBtn = document.getElementById('gateBtn');
+    
+    const dashboard = document.getElementById('dashboard');
+    const totalCountEl = document.getElementById('totalCount');
+    const passRateEl = document.getElementById('passRate');
+    const gradeACountEl = document.getElementById('gradeACount');
+    const tableBody = document.getElementById('submissionsTableBody');
+    const tableLoader = document.getElementById('tableLoader');
+    const tableSearch = document.getElementById('tableSearch');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+
+    // Trigger passcode check on click & enter
+    gateBtn.addEventListener('click', verifyPasscode);
+    passcodeField.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') verifyPasscode();
+    });
+
+    function verifyPasscode() {
+      if (passcodeField.value === PASSCODE) {
+        gateOverlay.style.display = 'none';
+        dashboard.style.display = 'block';
+        fetchDashboardData();
+      } else {
+        gateError.classList.add('visible');
+      }
+    }
+
+    // Clear gate error on input
+    passcodeField.addEventListener('input', () => {
+      gateError.classList.remove('visible');
+    });
+
+    // Fetch details
+    async function fetchDashboardData() {
+      tableBody.innerHTML = '';
+      tableLoader.style.display = 'flex';
+      
+      // If Web App URL is still placeholder, load mock data for testing/demo
+      if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE' || APPS_SCRIPT_URL === '') {
+        console.log("Using Mock Data (Demo Mode)");
+        setTimeout(() => {
+          allData = [
+            { timestamp: "2026/06/15 20:00:15", name: "Kavindu Perera", school: "Royal College", indexnumber: "512398", grade: "A", province: "බස්නාහිර පළාත (Western)", district: "කොළඹ (Colombo)", whatsapp: "+94 77 123 4567", comments: "Highly recommended!" },
+            { timestamp: "2026/06/15 20:05:42", name: "Amara Silva", school: "Visakha Vidyalaya", indexnumber: "512415", grade: "A", province: "බස්නාහිර පළාත (Western)", district: "කොළඹ (Colombo)", whatsapp: "+94 71 987 6543", comments: "Thank you sir!" },
+            { timestamp: "2026/06/15 20:10:11", name: "Nimal Ranasinghe", school: "St. Thomas' College", indexnumber: "513202", grade: "B", province: "මධ්‍යම පළාත (Central)", district: "මහනුවර (Kandy)", whatsapp: "+94 75 111 2222", comments: "" },
+            { timestamp: "2026/06/15 20:15:33", name: "Suresh Fernando", school: "Ananda College", indexnumber: "512056", grade: "C", province: "බස්නාහිර පළාත (Western)", district: "ගම්පහ (Gampaha)", whatsapp: "+94 76 333 4444", comments: "Sir is logical!" },
+            { timestamp: "2026/06/15 20:18:00", name: "Dulani Mendis", school: "Mahinda College", indexnumber: "602511", grade: "S", province: "දකුණු පළාත (Southern)", district: "ගාල්ල (Galle)", whatsapp: "+94 78 555 6666", comments: "" },
+            { timestamp: "2026/06/15 20:21:09", name: "Nuwan Jayasundara", school: "Maliyadeva College", indexnumber: "650123", grade: "F", province: "වයඹ පළාත (North Western)", district: "කුරුණෑගල (Kurunegala)", whatsapp: "+94 70 888 9999", comments: "Need online classes help." }
+          ];
+          tableLoader.style.display = 'none';
+          renderDashboard(allData);
+        }, 1000);
+        return;
+      }
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL);
+        const resJson = await response.json();
+        
+        if (resJson.status === 'success') {
+          allData = resJson.data || [];
+          renderDashboard(allData);
+        } else {
+          alert('Failed to load data from server.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Connection error. Could not connect to Google Apps Script.');
+      } finally {
+        tableLoader.style.display = 'none';
+      }
+    }
+
+    function renderDashboard(data) {
+      // 1. Stat cards
+      totalCountEl.textContent = data.length;
+      
+      const passGrades = ['A', 'B', 'C', 'S'];
+      const passCount = data.filter(r => passGrades.includes(r.grade)).length;
+      const passRate = data.length > 0 ? Math.round((passCount / data.length) * 100) : 0;
+      passRateEl.textContent = passRate + '%';
+      
+      const aCount = data.filter(r => r.grade === 'A').length;
+      gradeACountEl.textContent = aCount;
+
+      // 2. Grade Chart
+      const grades = ['A', 'B', 'C', 'S', 'F'];
+      const gradeCounts = {};
+      grades.forEach(g => gradeCounts[g] = 0);
+      data.forEach(r => {
+        if (grades.includes(r.grade)) gradeCounts[r.grade]++;
+      });
+      
+      const gradeChartHtml = grades.map(g => {
+        const count = gradeCounts[g];
+        const pct = data.length > 0 ? Math.round((count / data.length) * 100) : 0;
+        return `
+          <div class="chart-bar">
+            <div class="chart-bar__fill" style="width: ${pct}%;"></div>
+            <div class="chart-bar__content">
+              <span class="chart-bar__label">
+                <span class="grade-badge grade-badge--${g}">${g}</span>
+                <span>${count} Students</span>
+              </span>
+              <span>${pct}%</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('gradeChartList').innerHTML = gradeChartHtml;
+
+      // 3. Province Summary
+      const provinces = {};
+      data.forEach(r => {
+        if (r.province) {
+          provinces[r.province] = (provinces[r.province] || 0) + 1;
+        }
+      });
+      
+      const sortedProvinces = Object.entries(provinces).sort((a, b) => b[1] - a[1]);
+      const provinceHtml = sortedProvinces.map(([provName, count]) => {
+        const pct = data.length > 0 ? Math.round((count / data.length) * 100) : 0;
+        const shortName = provName.split('(')[0].trim();
+        return `
+          <div class="chart-bar">
+            <div class="chart-bar__fill" style="width: ${pct}%;"></div>
+            <div class="chart-bar__content">
+              <span>${shortName} (${count})</span>
+              <span>${pct}%</span>
+            </div>
+          </div>
+        `;
+      }).join('') || '<p style="text-align:center; font-size:0.85rem; color:var(--text-muted); padding:var(--space-md);">පළාත් දත්ත නොමැත</p>';
+      document.getElementById('provinceChartList').innerHTML = provinceHtml;
+
+      // 4. Populate table
+      populateTable(data);
+    }
+
+    function populateTable(rows) {
+      tableBody.innerHTML = '';
+      if (rows.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">ප්‍රතිඵල දත්ත කිසිවක් හමු නොවීය.</td></tr>';
+        return;
+      }
+      
+      rows.forEach(r => {
+        const tr = document.createElement('tr');
+        
+        // Format district and province nicely
+        const cleanLocation = `${r.district ? r.district.split('(')[0].trim() : ''} (${r.province ? r.province.split('(')[0].trim() : ''})`;
+        
+        tr.innerHTML = `
+          <td style="color: var(--text-muted); font-size: 0.75rem;">${r.timestamp || ''}</td>
+          <td style="font-weight:600; color:var(--text-primary);">${r.name || ''}</td>
+          <td>${r.school || ''}</td>
+          <td style="font-family:'Inter',sans-serif; font-weight:500;">${r.indexnumber || ''}</td>
+          <td><span class="grade-badge grade-badge--${r.grade}">${r.grade || ''}</span></td>
+          <td>${cleanLocation}</td>
+          <td>
+            <a href="https://wa.me/${r.whatsapp ? r.whatsapp.replace(/[^0-9]/g, '') : ''}" target="_blank" style="color:var(--primary); text-decoration:none; font-weight:600;">
+              🟢 ${r.whatsapp ? r.whatsapp.replace(/'/g, '') : ''}
+            </a>
+          </td>
+          <td style="font-style:italic; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${r.comments || ''}">
+            ${r.comments || ''}
+          </td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    // Search table
+    tableSearch.addEventListener('input', () => {
+      const q = tableSearch.value.toLowerCase().trim();
+      const filtered = allData.filter(r => 
+        (r.name && r.name.toLowerCase().includes(q)) ||
+        (r.school && r.school.toLowerCase().includes(q)) ||
+        (r.district && r.district.toLowerCase().includes(q)) ||
+        (r.indexnumber && r.indexnumber.toString().includes(q)) ||
+        (r.grade && r.grade.toLowerCase() === q)
+      );
+      populateTable(filtered);
+    });
+
+    // Refresh Btn
+    refreshBtn.addEventListener('click', fetchDashboardData);
+
+    // CSV/Excel Export function
+    exportCsvBtn.addEventListener('click', () => {
+      if (allData.length === 0) {
+        alert("දත්ත නොමැත");
+        return;
+      }
+      
+      let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // Include BOM for proper Sinhala text rendering in Excel
+      csvContent += "Timestamp,Name,School,Index Number,Grade,Province,District,WhatsApp,Comments\n";
+      
+      allData.forEach(r => {
+        const cleanComments = (r.comments || '').replace(/"/g, '""');
+        const cleanName = (r.name || '').replace(/"/g, '""');
+        const cleanSchool = (r.school || '').replace(/"/g, '""');
+        const cleanWhatsapp = (r.whatsapp || '').replace(/'/g, '');
+        
+        const row = [
+          `"${r.timestamp || ''}"`,
+          `"${cleanName}"`,
+          `"${cleanSchool}"`,
+          `"${r.indexnumber || ''}"`,
+          `"${r.grade || ''}"`,
+          `"${r.province || ''}"`,
+          `"${r.district || ''}"`,
+          `"${cleanWhatsapp}"`,
+          `"${cleanComments}"`
+        ];
+        csvContent += row.join(",") + "\n";
+      });
+      
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `ol_results_summary_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  </script>
+</body>
+</html>

@@ -46,31 +46,93 @@ function doPost(e) {
       data.comments || ''
     ]);
     
-    // Return success response
+    // Return success response with CORS headers
     return ContentService
       .createTextOutput(JSON.stringify({ 
         status: 'success', 
         message: 'Data saved successfully' 
       }))
-      .setMimeType(ContentService.MimeType.JSON);
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
       
   } catch (error) {
-    // Return error response
+    // Return error response with CORS headers
     return ContentService
       .createTextOutput(JSON.stringify({ 
         status: 'error', 
         message: error.toString() 
       }))
-      .setMimeType(ContentService.MimeType.JSON);
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
   }
 }
 
-// Handle GET requests (for testing)
+// Handle GET requests (for dashboard data retrieval)
 function doGet(e) {
-  return ContentService
-    .createTextOutput(JSON.stringify({ 
-      status: 'active', 
-      message: 'O/L Results Form API is running!' 
-    }))
-    .setMimeType(ContentService.MimeType.JSON);
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var data = sheet.getDataRange().getValues();
+    
+    // If sheet is empty or only has headers
+    if (data.length <= 1) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ 
+          status: 'success', 
+          data: [] 
+        }))
+        .setMimeType(ContentService.MimeType.JSON)
+        .setHeaders({
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        });
+    }
+    
+    // Parse rows
+    var headers = data[0];
+    var rows = [];
+    for (var i = 1; i < data.length; i++) {
+      var row = {};
+      for (var j = 0; j < headers.length; j++) {
+        var key = headers[j].toString().toLowerCase().trim()
+          .replace(/\s+/g, '') // remove spaces
+          .replace(/[^a-z0-9]/gi, ''); // remove non-alphanumeric
+        row[key] = data[i][j];
+      }
+      rows.push(row);
+    }
+    
+    return ContentService
+      .createTextOutput(JSON.stringify({ 
+        status: 'success', 
+        data: rows 
+      }))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
+      
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ 
+        status: 'error', 
+        message: error.toString() 
+      }))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
+  }
 }

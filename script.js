@@ -291,7 +291,7 @@ form.addEventListener('submit', async (e) => {
     grade: selectedGrade.value,
     province: fields.province.value,
     district: fields.district.value,
-    whatsapp: '+94 ' + fields.whatsapp.value,
+    whatsapp: "'" + '+94 ' + fields.whatsapp.value,
     comments: fields.comments.value.trim()
   };
 

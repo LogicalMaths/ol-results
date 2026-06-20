@@ -444,10 +444,13 @@ function renderTestimonials(comments) {
   // Clear track
   testimonialsTrack.innerHTML = '';
   
+  // Shuffle comments randomly to show them in a different order each time
+  const shuffledComments = [...comments].sort(() => Math.random() - 0.5);
+  
   // If fewer than 4 comments, duplicate them to ensure marquee has enough items to loop seamlessly
-  let listToRender = [...comments];
+  let listToRender = [...shuffledComments];
   while (listToRender.length < 5) {
-    listToRender = listToRender.concat(comments);
+    listToRender = listToRender.concat(shuffledComments);
   }
   
   // Render cards
@@ -471,4 +474,9 @@ function renderTestimonials(comments) {
   
   // Show section now that comments exist
   testimonialsSection.style.display = 'block';
+  
+  // Set dynamic animation duration proportional to the number of cards to keep scroll speed constant
+  const secondsPerCard = 6; // Adjust this to make it slower or faster (6 seconds per card is a comfortable, readable speed)
+  const duration = listToRender.length * secondsPerCard;
+  testimonialsTrack.style.animationDuration = `${duration}s`;
 }

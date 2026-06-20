@@ -1087,3 +1087,142 @@ body {
   letter-spacing: 2px;
   text-transform: uppercase;
 }
+
+/* ---------- Floating Facebook Ad Card ---------- */
+.fb-ad-card {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 99;
+  width: 320px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), var(--shadow-card);
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+  animation: slideUpAd 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.5s backwards;
+  transition: transform var(--transition-base), opacity var(--transition-base), visibility var(--transition-base);
+}
+
+.fb-ad-card.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  pointer-events: none;
+}
+
+@keyframes slideUpAd {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.fb-ad-card__close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  line-height: 1;
+  transition: color var(--transition-fast);
+}
+
+.fb-ad-card__close:hover {
+  color: var(--error);
+}
+
+.fb-ad-card__avatar-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.fb-ad-card__avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: var(--shadow-card);
+}
+
+.fb-ad-card__badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: #1877f2; /* facebook blue */
+  color: #fff;
+  font-size: 0.75rem;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.fb-ad-card__body {
+  flex: 1;
+}
+
+.fb-ad-card__title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.fb-ad-card__text {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: var(--space-sm);
+}
+
+.fb-ad-card__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #000000;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.fb-ad-card__btn:hover {
+  background: #222222;
+  transform: translateY(-1px);
+}
+
+.fb-ad-card__btn-icon {
+  font-size: 0.8rem;
+}
+
+/* Responsive adjustment for small screens */
+@media (max-width: 480px) {
+  .fb-ad-card {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    width: auto;
+    padding: var(--space-md);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+}

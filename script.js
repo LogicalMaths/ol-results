@@ -480,3 +480,23 @@ function renderTestimonials(comments) {
   const duration = listToRender.length * secondsPerCard;
   testimonialsTrack.style.animationDuration = `${duration}s`;
 }
+
+// =============================================
+// Floating Facebook Ad Dismissal Logic
+// =============================================
+document.addEventListener('DOMContentLoaded', () => {
+  const fbAdCard = document.getElementById('fbAdCard');
+  const fbAdCardClose = document.getElementById('fbAdCardClose');
+  
+  if (fbAdCard && fbAdCardClose) {
+    // Check if user has already dismissed it in this session
+    if (sessionStorage.getItem('fbAdDismissed') === 'true') {
+      fbAdCard.classList.add('hidden');
+    }
+    
+    fbAdCardClose.addEventListener('click', () => {
+      fbAdCard.classList.add('hidden');
+      sessionStorage.setItem('fbAdDismissed', 'true');
+    });
+  }
+});
